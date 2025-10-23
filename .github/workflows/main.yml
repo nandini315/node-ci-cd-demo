@@ -1,61 +1,20 @@
 name: CI/CD Pipeline
 
-# --------------------------------------------------
-#1️⃣ Trigger - When should the pipeline run
-# --------------------------------------------------
 on:
   push:
     branches:
-      - main      # It runs automatically whenever you push code to the 'main' branch
+      - main
 
-# --------------------------------------------------
-# 2️⃣ Define Jobs - What tasks should run
-# --------------------------------------------------
 jobs:
   build:
-    runs-on: ubuntu-latest   # GitHub provides a free Linux machine to run your steps
+    runs-on: ubuntu-latest
 
     steps:
-      # --------------------------------------------------
-      # 3️⃣ Step 1: Checkout the latest code
-      # --------------------------------------------------
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      # --------------------------------------------------
-      # 4️⃣ Step 2: Setup Node.js environment
-      # --------------------------------------------------
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'   # You can use Node.js 18 (stable version)
-
-      # --------------------------------------------------
-      # 5️⃣ Step 3: Install project dependencies
-      # --------------------------------------------------
-      - name: Install dependencies
-        run: npm install
-
-      # --------------------------------------------------
-      # 6️⃣ Step 4: Run tests (optional)
-      # --------------------------------------------------
-      - name: Run tests
-        run: echo "No tests yet"   # Replace this later with real test commands
-
-      # --------------------------------------------------
-      # 7️⃣ Step 5: Build Docker image from Dockerfile
-      # --------------------------------------------------
       - name: Build Docker image
-        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/node-ci-cd-demo:latest .
+        run: docker build -t node-ci-cd-demo:latest .
 
-      # --------------------------------------------------
-      # 8️⃣ Step 6: Log in to DockerHub using GitHub Secrets
-      # --------------------------------------------------
-      - name: Log in to DockerHub
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-
-      # --------------------------------------------------
-      # 9️⃣ Step 7: Push Docker image to DockerHub
-      # --------------------------------------------------
-      - name: Push Docker image
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/node-ci-cd-demo:latest
+      - name: Run Docker container (optional test)
+        run: docker run -d -p 3000:3000 node-ci-cd-demo:latest
